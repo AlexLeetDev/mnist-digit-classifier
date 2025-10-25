@@ -1,27 +1,27 @@
-# Core machine learning
+# === Core Machine Learning ===
 tensorflow==2.20.0
+scikit-learn==1.7.2
 
-# Data manipulation & math
+# === Data Manipulation & Math ===
 numpy==2.3.4
 scipy==1.16.2
 
-# Image processing
+# === Image Processing ===
 pillow==12.0.0
 
-# Visualization
+# === Visualization ===
 matplotlib==3.10.7
 seaborn==0.13.2
 
-# Web framework for API
-flask==3.1.2
+# === Web Framework (API) ===
+fastapi==0.115.6
+uvicorn==0.32.1
+python-multipart==0.0.12
 
-# Evaluation and metrics
-scikit-learn==1.7.2
-
-# Optional: progress bars, utilities
+# === Optional Utilities ===
 tqdm==4.67.1
 
-# Development tools
+# === Development Tools ===
 ipython==9.6.0
 jupyterlab==4.4.9
 pytest==8.4.2

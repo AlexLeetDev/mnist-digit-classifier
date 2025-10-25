@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MNIST Digit Classifier</title>
+  <style>
+    :root { --gap: 12px; }
+    body { font-family: system-ui, Arial, sans-serif; margin: 20px; display: grid; justify-items: center; gap: var(--gap); }
+    .wrap { display: grid; gap: var(--gap); max-width: 720px; width: 100%; }
+    h1 { margin: 0; font-size: 1.4rem; }
+    .row { display: grid; gap: var(--gap); }
+    .board { display: grid; gap: var(--gap); justify-items: center; }
+    canvas { border: 2px solid #333; background: #000; width: 280px; height: 280px; touch-action: none; }
+    .buttons { display: flex; gap: var(--gap); flex-wrap: wrap; }
+    button, label.upload {
+      background: #1f6feb; color: #fff; border: 0; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer;
+    }
+    button.secondary { background: #6e7781; }
+    input[type="file"] { display: none; }
+    .status { min-height: 1.6rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .probs { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; font-size: 0.9rem; }
+    .prob { text-align: center; padding: 6px; border-radius: 6px; background: #f3f4f6; }
+    .prob.best { outline: 2px solid #1f6feb; background: #e8f0ff; font-weight: 700; }
+    footer { opacity: .7; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>🧠 MNIST Digit Classifier (Local Demo)</h1>
+
+    <div class="row board">
+      <canvas id="canvas" width="280" height="280" aria-label="Draw a digit"></canvas>
+      <div class="buttons">
+        <button id="clearBtn" class="secondary">Clear</button>
+        <button id="predictBtn">Predict</button>
+        <label class="upload">
+          Upload Image
+          <input id="fileInput" type="file" accept="image/*"/>
+        </label>
+      </div>
+      <div class="status" id="status">Draw a digit or upload an image, then click Predict.</div>
+      <div class="probs" id="probs" aria-live="polite"></div>
+    </div>
+
+    <footer>API target: <code id="apiUrl">http://127.0.0.1:8000/predict</code></footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
