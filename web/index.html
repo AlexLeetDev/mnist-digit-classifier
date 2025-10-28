@@ -1,51 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="auto">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MNIST Digit Classifier</title>
-  <style>
-    :root { --gap: 12px; }
-    body { font-family: system-ui, Arial, sans-serif; margin: 20px; display: grid; justify-items: center; gap: var(--gap); }
-    .wrap { display: grid; gap: var(--gap); max-width: 720px; width: 100%; }
-    h1 { margin: 0; font-size: 1.4rem; }
-    .row { display: grid; gap: var(--gap); }
-    .board { display: grid; gap: var(--gap); justify-items: center; }
-    canvas { border: 2px solid #333; background: #000; width: 280px; height: 280px; touch-action: none; }
-    .buttons { display: flex; gap: var(--gap); flex-wrap: wrap; }
-    button, label.upload {
-      background: #1f6feb; color: #fff; border: 0; padding: 8px 14px; border-radius: 6px; font-weight: 600; cursor: pointer;
-    }
-    button.secondary { background: #6e7781; }
-    input[type="file"] { display: none; }
-    .status { min-height: 1.6rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-    .probs { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 6px; font-size: 0.9rem; }
-    .prob { text-align: center; padding: 6px; border-radius: 6px; background: #f3f4f6; }
-    .prob.best { outline: 2px solid #1f6feb; background: #e8f0ff; font-weight: 700; }
-    footer { opacity: .7; font-size: .9rem; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MNIST Digit Classifier · Demo</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%23000'/><text x='50%' y='54%' dominant-baseline='middle' text-anchor='middle' font-size='34' fill='%23fff' font-family='Arial,Helvetica,sans-serif'>AI</text></svg>">
+  <link rel="stylesheet" href="style.css" />
+  <meta name="description" content="Draw a digit (0–9) and the model predicts it in real time." />
 </head>
 <body>
-  <div class="wrap">
-    <h1>🧠 MNIST Digit Classifier (Local Demo)</h1>
-
-    <div class="row board">
-      <canvas id="canvas" width="280" height="280" aria-label="Draw a digit"></canvas>
-      <div class="buttons">
-        <button id="clearBtn" class="secondary">Clear</button>
-        <button id="predictBtn">Predict</button>
-        <label class="upload">
-          Upload Image
-          <input id="fileInput" type="file" accept="image/*"/>
-        </label>
-      </div>
-      <div class="status" id="status">Draw a digit or upload an image, then click Predict.</div>
-      <div class="probs" id="probs" aria-live="polite"></div>
+  <header class="toolbar" role="banner">
+    <div class="left">
+      <div class="brand">MNIST <span class="dot">•</span> Demo</div>
     </div>
+    <div class="right">
+      <button id="themeToggle" class="icon-btn" title="Toggle theme" aria-label="Toggle theme">🌓</button>
+      <a class="icon-btn" href="https://github.com/AlexLeetDev/mnist-digit-classifier" target="_blank" rel="noopener" title="View source" aria-label="View source">💻</a>
+    </div>
+  </header>
 
-    <footer>API target: <code id="apiUrl">http://127.0.0.1:8000/predict</code></footer>
-  </div>
+  <main class="wrap" role="main">
+    <section class="intro">
+      <h1>Handwritten Digit Classifier</h1>
+      <p>Draw a digit (0–9) or upload an image. The model (TensorFlow) runs on the server (FastAPI) and returns the prediction.</p>
+    </section>
 
+    <section class="board">
+      <div class="canvas-card">
+        <div class="canvas-toolbar" role="group" aria-label="Canvas controls">
+          <button id="clearBtn" class="btn secondary" title="Clear (C)">Clear</button>
+          <button id="undoBtn" class="btn secondary" title="Undo (Z)">Undo</button>
+          <div class="divider" role="separator" aria-hidden="true"></div>
+          <label class="btn file">
+            <input id="fileInput" type="file" accept="image/*" />
+            Upload
+          </label>
+          <button id="predictBtn" class="btn primary">Predict</button>
+          <div class="spacer"></div>
+          <label class="range">
+            Brush <input id="brush" type="range" min="8" max="32" value="18" />
+          </label>
+        </div>
+
+        <div class="canvas-wrap">
+          <canvas id="canvas" width="280" height="280" aria-label="Drawing canvas"></canvas>
+          <div id="loading" class="loading" aria-live="polite" aria-busy="false" hidden>
+            <div class="spinner" aria-hidden="true"></div>
+            Predicting
+          </div>
+        </div>
+
+        <div class="status" id="status" aria-live="polite">
+          Ready. Draw a digit or upload an image, then click <strong>Predict</strong>.
+        </div>
+      </div>
+
+      <div class="result-card">
+        <h2 class="result-title">Prediction</h2>
+        <div id="pred" class="pred">–</div>
+        <div id="probs" class="probs" role="list" aria-label="Class probabilities (0–9)"></div>
+        <details class="tech">
+          <summary>Details</summary>
+          <div class="kv">
+            <div>API</div><div><code id="apiUrl">http://127.0.0.1:8000/predict</code></div>
+            <div>Canvas</div><div>White ink on black background</div>
+            <div>Model</div><div>TensorFlow CNN trained on MNIST</div>
+          </div>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <small>© <span id="year"></span> Alex Leet · Built with TensorFlow + FastAPI</small>
+  </footer>
+
+  <script>
+    window.API_URL = window.API_URL || "http://127.0.0.1:8000/predict";
+  </script>
   <script src="app.js"></script>
-</body>
+</body> 
 </html>
