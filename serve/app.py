@@ -52,3 +52,8 @@ async def predict(file: UploadFile = File(...)):
     probs = model.predict(x, verbose=0)[0]
     pred = int(np.argmax(probs))
     return {"prediction": pred, "probabilities": [float(p) for p in probs]}
+
+
+@app.get("/health")
+def health():
+    return {"ok": True}
