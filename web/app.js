@@ -1,5 +1,5 @@
 // --- Config ---
-const API_URL = window.API_URL || "http://127.0.0.1:8000/predict";
+const API_URL = "https://leet-mnist-api.onrender.com/predict";
 
 // --- DOM refs ---
 const canvas = document.getElementById("canvas");
